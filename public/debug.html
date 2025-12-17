@@ -6,6 +6,8 @@
     <title>Mirror — Debug Monitor</title>
     <link rel="stylesheet" href="/face.css" />
     <link rel="stylesheet" href="/debug.css" />
+    <!-- face-api.js for emotion detection -->
+    <script async src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script type="importmap">
       {
         "imports": {
@@ -14,6 +16,95 @@
         }
       }
     </script>
+    <style>
+      #debug-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      .debug-section {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 1rem;
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .debug-section h2 {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        color: #0f0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .camera-container {
+        position: relative;
+        width: 100%;
+        flex: 1;
+        background: #000;
+        border-radius: 4px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      video,
+      canvas.emotion-canvas {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .emotion-stats {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 0.8rem;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        font-family: monospace;
+        color: #0f0;
+      }
+
+      .emotion-stats div {
+        margin: 0.3rem 0;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .emotion-bar {
+        height: 4px;
+        background: #333;
+        border-radius: 2px;
+        margin-top: 2px;
+        overflow: hidden;
+      }
+
+      .emotion-bar-fill {
+        height: 100%;
+        background: #0f0;
+        transition: width 0.1s ease;
+      }
+
+      #debug-log-panel {
+        grid-column: 2 / 4;
+      }
+
+      @media (max-width: 1200px) {
+        #debug-layout {
+          grid-template-columns: 1fr;
+        }
+
+        #debug-log-panel {
+          grid-column: 1;
+        }
+      }
+    </style>
   </head>
   <body class="debug-page" data-face-debug="true">
     <header id="face-header">
@@ -27,7 +118,71 @@
     </header>
     <div id="status">Loading Mirror…</div>
     <div id="debug-layout">
-      <div id="canvas-container" class="debug-canvas"></div>
+      <!-- Avatar View -->
+      <div class="debug-section">
+        <h2>📺 Avatar Renderer</h2>
+        <div id="canvas-container" class="debug-canvas"></div>
+      </div>
+
+      <!-- Camera & Emotion View -->
+      <div class="debug-section">
+        <h2>📷 Camera & Emotion</h2>
+        <div class="camera-container">
+          <video id="debug-emotion-video" autoplay playsinline muted></video>
+          <canvas id="debug-emotion-canvas" class="emotion-canvas"></canvas>
+        </div>
+        <div class="emotion-stats" id="emotion-stats">
+          <div>Status: <span id="emotion-status">Initializing...</span></div>
+        </div>
+      </div>
+
+      <!-- Emotion Analytics -->
+      <div class="debug-section">
+        <h2>😊 Emotion Analytics</h2>
+        <div id="emotion-details" class="emotion-stats">
+          <div>Current: <span id="current-emotion">-</span></div>
+          <div>Confidence: <span id="emotion-confidence">0%</span></div>
+          <div style="margin-top: 0.8rem; border-top: 1px solid #333; padding-top: 0.5rem;">
+            <div>Happy: <span id="score-happy">0%</span>
+              <div class="emotion-bar">
+                <div class="emotion-bar-fill" id="bar-happy"></div>
+              </div>
+            </div>
+            <div>Sad: <span id="score-sad">0%</span>
+              <div class="emotion-bar">
+                <div class="emotion-bar-fill" id="bar-sad"></div>
+              </div>
+            </div>
+            <div>Angry: <span id="score-angry">0%</span>
+              <div class="emotion-bar">
+                <div class="emotion-bar-fill" id="bar-angry"></div>
+              </div>
+            </div>
+            <div>Fearful: <span id="score-fearful">0%</span>
+              <div class="emotion-bar">
+                <div class="emotion-bar-fill" id="bar-fearful"></div>
+              </div>
+            </div>
+            <div>Disgusted: <span id="score-disgusted">0%</span>
+              <div class="emotion-bar">
+                <div class="emotion-bar-fill" id="bar-disgusted"></div>
+              </div>
+            </div>
+            <div>Surprised: <span id="score-surprised">0%</span>
+              <div class="emotion-bar">
+                <div class="emotion-bar-fill" id="bar-surprised"></div>
+              </div>
+            </div>
+            <div>Neutral: <span id="score-neutral">0%</span>
+              <div class="emotion-bar">
+                <div class="emotion-bar-fill" id="bar-neutral"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Debug Log -->
       <aside id="debug-log-panel" aria-label="Debug log">
         <div class="debug-log-header">
           <h1>Debug log</h1>
@@ -42,5 +197,80 @@
     </div>
     <audio id="assistant-audio" autoplay playsinline muted></audio>
     <script type="module" src="/debug.js"></script>
+    <script type="module">
+      // Debug: Emotion Detection
+      import EmotionDetector from "./emotion-detector.js";
+
+      const debugVideo = document.getElementById("debug-emotion-video");
+      const debugCanvas = document.getElementById("debug-emotion-canvas");
+      const emotionStatus = document.getElementById("emotion-status");
+      const currentEmotionEl = document.getElementById("current-emotion");
+      const emotionConfidenceEl = document.getElementById("emotion-confidence");
+
+      let emotionDetector = null;
+
+      async function initDebugEmotion() {
+        try {
+          emotionDetector = new EmotionDetector();
+          await emotionDetector.initialize(debugVideo, debugCanvas);
+
+          emotionStatus.textContent = "✅ Running";
+          emotionStatus.style.color = "#0f0";
+
+          // Update emotion display
+          emotionDetector.onEmotionUpdate((emotion, confidence) => {
+            currentEmotionEl.textContent = emotion.toUpperCase();
+            emotionConfidenceEl.textContent = (confidence * 100).toFixed(0) + "%";
+
+            // Update emotion bars
+            if (emotionDetector.emotionHistory.length > 0) {
+              const lastDetection = emotionDetector.emotionHistory[emotionDetector.emotionHistory.length - 1];
+              // Note: This assumes the detection object has an expressions field
+              console.log("Emotion update:", emotion, confidence);
+            }
+          });
+
+          console.log("✅ Debug emotion detection initialized");
+        } catch (err) {
+          console.error("❌ Emotion detection failed:", err);
+          emotionStatus.textContent = "❌ Failed: " + err.message;
+          emotionStatus.style.color = "#f00";
+        }
+      }
+
+      // Start detection on page load
+      window.addEventListener("load", () => {
+        setTimeout(initDebugEmotion, 500);
+      });
+
+      // Update emotion bars periodically
+      setInterval(() => {
+        if (emotionDetector && emotionDetector.emotionHistory.length > 0) {
+          // Get average of last detections for smoother bars
+          const recent = emotionDetector.emotionHistory.slice(-15);
+          const avgEmotions = {};
+
+          const emotionKeys = ["happy", "sad", "angry", "fearful", "disgusted", "surprised", "neutral"];
+          emotionKeys.forEach((key) => {
+            avgEmotions[key] = 0;
+          });
+
+          recent.forEach((detection) => {
+            // Accumulate if we have expressions data
+            if (detection.emotion) {
+              avgEmotions[detection.emotion] = (avgEmotions[detection.emotion] || 0) + 1;
+            }
+          });
+
+          // Normalize to percentages
+          const total = recent.length;
+          emotionKeys.forEach((key) => {
+            const percentage = Math.round((avgEmotions[key] / total) * 100);
+            document.getElementById(`score-${key}`).textContent = percentage + "%";
+            document.getElementById(`bar-${key}`).style.width = percentage + "%";
+          });
+        }
+      }, 500);
+    </script>
   </body>
 </html>
