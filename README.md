@@ -75,12 +75,13 @@ Output:
 
 ### 4️⃣ Access Features
 
-| Feature         | URL                            | Description         |
-| --------------- | ------------------------------ | ------------------- |
-| **Face Viewer** | http://localhost:1234/face     | 3D avatar display   |
-| **Voice Chat**  | http://localhost:1234/talk     | Speech + emotion UI |
-| **Settings**    | http://localhost:1234/settings | Configuration panel |
-| **Debug**       | http://localhost:1234/debug    | Dev tools           |
+| Feature             | URL                             | Description                |
+| ------------------- | ------------------------------- | -------------------------- |
+| **Production Mode** | http://localhost:1234/prod.html | Landing page (no settings) |
+| **Voice Chat**      | http://localhost:1234/talk      | Speech + emotion UI        |
+| **Face Viewer**     | http://localhost:1234/face      | 3D avatar display          |
+| **Settings**        | http://localhost:1234/settings  | Configuration panel        |
+| **Debug**           | http://localhost:1234/debug     | Dev tools                  |
 
 ---
 
@@ -127,10 +128,52 @@ Magic_Mirror/
 │
 ├── deno.json                        # Deno config + tasks
 ├── .env.example                     # Environment template
-├── VOICE_SETUP.md                   # Voice feature documentation ⭐
-├── CAMERA_SETUP.md                  # Emotion detection setup
+├── .env.docker                      # Docker environment template
+├── Dockerfile                       # Docker image definition
+├── docker-compose.yml               # Docker compose config
 └── README.md                        # This file
+
+📚 Documentation:
+├── VOICE_SETUP.md                   # Voice conversation guide
+├── CAMERA_SETUP.md                  # Emotion detection setup
+├── ARCHITECTURE.md                  # Technical architecture
+├── TROUBLESHOOTING.md               # Problem solving
+└── docs/DOCKER_DEPLOYMENT.md        # Docker production deployment
 ```
+
+---
+
+## 🐳 Docker Deployment (Production)
+
+### One-Command Deployment
+
+```bash
+# 1. Configure environment
+cp .env.docker .env.prod
+echo "OPENAI_API_KEY=sk-..." >> .env.prod
+
+# 2. Start with Docker Compose
+docker-compose up -d
+
+# 3. Access production interface
+http://localhost:1234/prod.html
+```
+
+**Features:**
+
+- ✅ Minimal landing page (no settings UI)
+- ✅ Direct voice conversation interface
+- ✅ Emotion detection enabled
+- ✅ 3D avatar with real-time animation
+- ✅ Resource limits & security hardening
+- ✅ Health checks & auto-restart
+
+**See [docs/DOCKER_DEPLOYMENT.md](./docs/DOCKER_DEPLOYMENT.md) for:**
+
+- Kubernetes & Docker Swarm setup
+- Monitoring & logging
+- Performance tuning
+- Production best practices
 
 ---
 

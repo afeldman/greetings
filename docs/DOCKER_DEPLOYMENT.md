@@ -5,6 +5,7 @@ Run Magic Mirror in production using Docker containers.
 ## 🚀 Quick Start
 
 ### 1. Prepare Environment
+
 ```bash
 # Copy and configure environment
 cp .env.docker .env.prod
@@ -14,6 +15,7 @@ nano .env.prod
 ```
 
 Set these required variables:
+
 ```env
 OPENAI_API_KEY=sk-...your-key...
 ```
@@ -21,6 +23,7 @@ OPENAI_API_KEY=sk-...your-key...
 ### 2. Build & Run
 
 **Option A: Docker Compose (Recommended)**
+
 ```bash
 docker-compose up -d
 ```
@@ -28,6 +31,7 @@ docker-compose up -d
 Access at: `http://localhost:1234/prod.html`
 
 **Option B: Docker CLI**
+
 ```bash
 docker build -t magic-mirror:latest .
 
@@ -65,6 +69,7 @@ NVIDIA_A2F_ENDPOINT=...               # Avatar animation service
 ```
 
 ### Minimal Setup (Voice Only)
+
 ```bash
 docker run -d \
   -e OPENAI_API_KEY=sk-... \
@@ -73,6 +78,7 @@ docker run -d \
 ```
 
 ### Full Setup (All Features)
+
 ```bash
 docker run -d \
   -e OPENAI_API_KEY=sk-... \
@@ -87,6 +93,7 @@ docker run -d \
 ## 🛠️ Management
 
 ### View Logs
+
 ```bash
 docker-compose logs -f magic-mirror
 # or
@@ -94,6 +101,7 @@ docker logs -f magic-mirror
 ```
 
 ### Stop Container
+
 ```bash
 docker-compose down
 # or
@@ -101,6 +109,7 @@ docker stop magic-mirror
 ```
 
 ### Restart
+
 ```bash
 docker-compose restart
 # or
@@ -108,6 +117,7 @@ docker restart magic-mirror
 ```
 
 ### Check Health
+
 ```bash
 docker-compose ps
 # or
@@ -119,21 +129,24 @@ docker ps | grep magic-mirror
 ## 📊 Resource Usage
 
 Default limits:
+
 - **CPU**: 2 cores max, 1 core reserved
 - **Memory**: 2GB max, 1GB reserved
 
 ### Adjust Resources
 
 Edit `docker-compose.yml`:
+
 ```yaml
 deploy:
   resources:
     limits:
-      cpus: '2'
+      cpus: "2"
       memory: 2G
 ```
 
 Or via CLI:
+
 ```bash
 docker run \
   --cpus="2" \
@@ -146,6 +159,7 @@ docker run \
 ## 🔒 Security
 
 Container runs with:
+
 - ✅ No root privileges (user: deno-user)
 - ✅ All capabilities dropped
 - ✅ Read-only filesystem (except /tmp)
@@ -153,6 +167,7 @@ Container runs with:
 - ✅ Health checks enabled
 
 ### Network Security
+
 ```bash
 # Restrict to localhost only
 docker run \
@@ -161,6 +176,7 @@ docker run \
 ```
 
 ### Secret Management (Production)
+
 ```bash
 # Use Docker secrets instead of .env
 docker secret create magic_mirror_key .env.prod
@@ -175,6 +191,7 @@ docker service create \
 ## 🚀 Production Deployment
 
 ### Docker Hub (Optional)
+
 ```bash
 # Tag image
 docker tag magic-mirror:latest yourname/magic-mirror:latest
@@ -190,6 +207,7 @@ docker run -d \
 ```
 
 ### Kubernetes
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -200,26 +218,27 @@ spec:
   template:
     spec:
       containers:
-      - name: magic-mirror
-        image: magic-mirror:latest
-        ports:
-        - containerPort: 1234
-        env:
-        - name: OPENAI_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: magic-mirror-secrets
-              key: openai-api-key
-        resources:
-          limits:
-            memory: "2Gi"
-            cpu: "2"
-          requests:
-            memory: "1Gi"
-            cpu: "1"
+        - name: magic-mirror
+          image: magic-mirror:latest
+          ports:
+            - containerPort: 1234
+          env:
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: magic-mirror-secrets
+                  key: openai-api-key
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "2"
+            requests:
+              memory: "1Gi"
+              cpu: "1"
 ```
 
 ### Docker Swarm
+
 ```bash
 docker service create \
   --name magic-mirror \
@@ -235,11 +254,13 @@ docker service create \
 ## 📈 Monitoring
 
 ### View CPU/Memory Usage
+
 ```bash
 docker stats magic-mirror
 ```
 
 ### Collect Logs
+
 ```bash
 # Save logs to file
 docker logs magic-mirror > mirror.log 2>&1
@@ -249,6 +270,7 @@ docker logs -f --tail 100 magic-mirror
 ```
 
 ### Performance Metrics
+
 ```bash
 docker inspect magic-mirror --format='{{json .State}}'
 ```
@@ -258,6 +280,7 @@ docker inspect magic-mirror --format='{{json .State}}'
 ## 🔧 Troubleshooting
 
 ### Port Already in Use
+
 ```bash
 # Find process using port 1234
 lsof -i :1234
@@ -270,6 +293,7 @@ docker run -p 3000:1234 ...
 ```
 
 ### Out of Memory
+
 ```bash
 # Check container memory
 docker inspect magic-mirror --format='{{.HostConfig.Memory}}'
@@ -282,6 +306,7 @@ deploy:
 ```
 
 ### API Key Issues
+
 ```bash
 # Check environment variables inside container
 docker exec magic-mirror env | grep OPENAI
@@ -294,6 +319,7 @@ docker run -it \
 ```
 
 ### Network Issues
+
 ```bash
 # Test connectivity
 docker exec magic-mirror curl https://api.openai.com/v1/models
@@ -307,21 +333,25 @@ docker exec magic-mirror nslookup api.openai.com
 ## 📚 Docker Compose Reference
 
 ### View services
+
 ```bash
 docker-compose ps
 ```
 
 ### Execute command in container
+
 ```bash
 docker-compose exec magic-mirror deno --version
 ```
 
 ### Rebuild image
+
 ```bash
 docker-compose build --no-cache
 ```
 
 ### Scale services (if applicable)
+
 ```bash
 docker-compose up -d --scale magic-mirror=3
 ```
@@ -331,6 +361,7 @@ docker-compose up -d --scale magic-mirror=3
 ## 🌐 Networking
 
 ### Access from Other Machines
+
 ```bash
 # Linux/macOS/Windows machine IP
 ifconfig        # macOS
@@ -342,6 +373,7 @@ http://192.168.x.x:1234/prod.html
 ```
 
 ### Docker Network
+
 ```bash
 # Create custom network
 docker network create magic-mirror-net
