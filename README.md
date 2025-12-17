@@ -257,12 +257,6 @@ OPENAI_MODEL=gpt-4o-mini
 
 # Optional: TTS voice (default: alloy)
 OPENAI_VOICE=alloy
-
-# Optional: Mammouth.ai API key (for cheaper chat)
-MAMMOUTH_API_KEY=...
-
-# Optional: Nvidia Audio2Face endpoint
-NVIDIA_A2F_ENDPOINT=grpc.nvcf.nvidia.com:443
 ```
 
 ### Switch to Mammouth.ai (Optional)
@@ -275,6 +269,61 @@ MAMMOUTH_API_KEY=your-key-here
 
 # Note: Whisper STT and TTS remain on OpenAI (not available on Mammouth)
 ```
+
+---
+
+## 📖 Documentation Map
+
+```
+📚 docs/                           All documentation files
+├── VOICE_SETUP.md                 Voice conversation guide
+├── CAMERA_SETUP.md                Emotion detection setup
+├── ARCHITECTURE.md                System design & data flows
+├── DOCKER_DEPLOYMENT.md           Production deployment
+├── TROUBLESHOOTING.md             Problem solving
+├── realtime-audio-to-a2f.md       Audio pipeline details
+├── DENO_README.md                 Deno configuration
+└── CLEANUP.md                     Project cleanup guide
+
+🚀 Quick Links:
+├── Voice Chat UI:                 http://localhost:1234/talk
+├── Debug Console:                 http://localhost:1234/debug
+├── Production Mode:               http://localhost:1234/prod.html
+└── Avatar Viewer:                 http://localhost:1234/face
+```
+
+---
+
+## 📚 Detailed Guides
+
+- 🎤 **[Voice Conversation Setup](./docs/VOICE_SETUP.md)** - Complete voice feature guide
+- 📷 **[Camera & Emotion Detection](./docs/CAMERA_SETUP.md)** - Webcam setup & troubleshooting
+- 🏗️ **[System Architecture](./docs/ARCHITECTURE.md)** - Technical deep dive & data flows
+- 🔊 **[Audio Processing](./docs/realtime-audio-to-a2f.md)** - Real-time audio to blendshapes
+- 🐳 **[Docker Deployment](./docs/DOCKER_DEPLOYMENT.md)** - Production deployment guide
+- 🔧 **[Troubleshooting](./docs/TROUBLESHOOTING.md)** - Problem solving guide
+- 📖 **[Deno Setup](./docs/DENO_README.md)** - Deno-specific configuration
+
+# Optional: Mammouth.ai API key (for cheaper chat)
+
+MAMMOUTH_API_KEY=...
+
+# Optional: Nvidia Audio2Face endpoint
+
+NVIDIA_A2F_ENDPOINT=grpc.nvcf.nvidia.com:443
+
+````
+
+### Switch to Mammouth.ai (Optional)
+
+For 70-80% cheaper chat completions:
+
+```bash
+# In .env, add:
+MAMMOUTH_API_KEY=your-key-here
+
+# Note: Whisper STT and TTS remain on OpenAI (not available on Mammouth)
+````
 
 ---
 
@@ -375,15 +424,6 @@ const greetings = {
   happy: "Du siehst glücklich aus! Schön, dass es dir gut geht!",
   // Add more...
 };
-```
-
----
-
-## 📚 Detailed Guides
-
-- 🎤 **[Voice Conversation Setup](./VOICE_SETUP.md)** - Complete voice feature guide
-- 📷 **[Camera & Emotion Detection](./CAMERA_SETUP.md)** - Webcam setup & troubleshooting
-- 🔊 **[Audio Processing](./docs/realtime-audio-to-a2f.md)** - Technical audio details
 
 ---
 

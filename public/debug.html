@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="/face.css" />
     <link rel="stylesheet" href="/debug.css" />
     <!-- face-api.js for emotion detection -->
-    <script async src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script
+      async
+      src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"
+    ></script>
     <script type="importmap">
       {
         "imports": {
@@ -142,38 +145,51 @@
         <div id="emotion-details" class="emotion-stats">
           <div>Current: <span id="current-emotion">-</span></div>
           <div>Confidence: <span id="emotion-confidence">0%</span></div>
-          <div style="margin-top: 0.8rem; border-top: 1px solid #333; padding-top: 0.5rem;">
-            <div>Happy: <span id="score-happy">0%</span>
+          <div
+            style="
+              margin-top: 0.8rem;
+              border-top: 1px solid #333;
+              padding-top: 0.5rem;
+            "
+          >
+            <div>
+              Happy: <span id="score-happy">0%</span>
               <div class="emotion-bar">
                 <div class="emotion-bar-fill" id="bar-happy"></div>
               </div>
             </div>
-            <div>Sad: <span id="score-sad">0%</span>
+            <div>
+              Sad: <span id="score-sad">0%</span>
               <div class="emotion-bar">
                 <div class="emotion-bar-fill" id="bar-sad"></div>
               </div>
             </div>
-            <div>Angry: <span id="score-angry">0%</span>
+            <div>
+              Angry: <span id="score-angry">0%</span>
               <div class="emotion-bar">
                 <div class="emotion-bar-fill" id="bar-angry"></div>
               </div>
             </div>
-            <div>Fearful: <span id="score-fearful">0%</span>
+            <div>
+              Fearful: <span id="score-fearful">0%</span>
               <div class="emotion-bar">
                 <div class="emotion-bar-fill" id="bar-fearful"></div>
               </div>
             </div>
-            <div>Disgusted: <span id="score-disgusted">0%</span>
+            <div>
+              Disgusted: <span id="score-disgusted">0%</span>
               <div class="emotion-bar">
                 <div class="emotion-bar-fill" id="bar-disgusted"></div>
               </div>
             </div>
-            <div>Surprised: <span id="score-surprised">0%</span>
+            <div>
+              Surprised: <span id="score-surprised">0%</span>
               <div class="emotion-bar">
                 <div class="emotion-bar-fill" id="bar-surprised"></div>
               </div>
             </div>
-            <div>Neutral: <span id="score-neutral">0%</span>
+            <div>
+              Neutral: <span id="score-neutral">0%</span>
               <div class="emotion-bar">
                 <div class="emotion-bar-fill" id="bar-neutral"></div>
               </div>
@@ -192,7 +208,11 @@
             <button id="debug-log-clear" type="button">Clear</button>
           </div>
         </div>
-        <div id="debug-log-output" class="debug-log-output" aria-live="polite"></div>
+        <div
+          id="debug-log-output"
+          class="debug-log-output"
+          aria-live="polite"
+        ></div>
       </aside>
     </div>
     <audio id="assistant-audio" autoplay playsinline muted></audio>
@@ -220,11 +240,15 @@
           // Update emotion display
           emotionDetector.onEmotionUpdate((emotion, confidence) => {
             currentEmotionEl.textContent = emotion.toUpperCase();
-            emotionConfidenceEl.textContent = (confidence * 100).toFixed(0) + "%";
+            emotionConfidenceEl.textContent =
+              (confidence * 100).toFixed(0) + "%";
 
             // Update emotion bars
             if (emotionDetector.emotionHistory.length > 0) {
-              const lastDetection = emotionDetector.emotionHistory[emotionDetector.emotionHistory.length - 1];
+              const lastDetection =
+                emotionDetector.emotionHistory[
+                  emotionDetector.emotionHistory.length - 1
+                ];
               // Note: This assumes the detection object has an expressions field
               console.log("Emotion update:", emotion, confidence);
             }
@@ -250,7 +274,15 @@
           const recent = emotionDetector.emotionHistory.slice(-15);
           const avgEmotions = {};
 
-          const emotionKeys = ["happy", "sad", "angry", "fearful", "disgusted", "surprised", "neutral"];
+          const emotionKeys = [
+            "happy",
+            "sad",
+            "angry",
+            "fearful",
+            "disgusted",
+            "surprised",
+            "neutral",
+          ];
           emotionKeys.forEach((key) => {
             avgEmotions[key] = 0;
           });
@@ -258,7 +290,8 @@
           recent.forEach((detection) => {
             // Accumulate if we have expressions data
             if (detection.emotion) {
-              avgEmotions[detection.emotion] = (avgEmotions[detection.emotion] || 0) + 1;
+              avgEmotions[detection.emotion] =
+                (avgEmotions[detection.emotion] || 0) + 1;
             }
           });
 
@@ -266,8 +299,10 @@
           const total = recent.length;
           emotionKeys.forEach((key) => {
             const percentage = Math.round((avgEmotions[key] / total) * 100);
-            document.getElementById(`score-${key}`).textContent = percentage + "%";
-            document.getElementById(`bar-${key}`).style.width = percentage + "%";
+            document.getElementById(`score-${key}`).textContent =
+              percentage + "%";
+            document.getElementById(`bar-${key}`).style.width =
+              percentage + "%";
           });
         }
       }, 500);
