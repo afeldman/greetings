@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Talk to Character - Magic Mirror</title>
     <link rel="stylesheet" href="./styles.css" />
+    <!-- face-api.js for emotion detection -->
+    <script
+      async
+      src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"
+    ></script>
     <style>
       body {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -16,12 +21,42 @@
       }
 
       .container {
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1.5rem;
         align-items: stretch;
+      }
+
+      .camera-section {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 400px;
+      }
+
+      .camera-container {
+        position: relative;
+        flex: 1;
+        background: #000;
+      }
+
+      video,
+      canvas.emotion-canvas {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .emotion-display {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        text-align: center;
+        font-weight: 600;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
       }
 
       .video-section {
@@ -31,7 +66,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 500px;
+        min-height: 400px;
       }
 
       canvas {
@@ -42,7 +77,7 @@
       .controls-section {
         background: rgba(0, 0, 0, 0.2);
         border-radius: 12px;
-        padding: 2rem;
+        padding: 1.5rem;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -167,10 +202,23 @@
   </head>
   <body>
     <div class="container">
+      <!-- Camera & Emotion Detection -->
+      <div class="camera-section">
+        <div class="camera-container">
+          <video id="emotion-video" autoplay playsinline muted></video>
+          <canvas id="emotion-canvas" class="emotion-canvas"></canvas>
+        </div>
+        <div class="emotion-display">
+          <div id="emotion-label">📷 Initializing camera...</div>
+        </div>
+      </div>
+
+      <!-- Avatar Display -->
       <div class="video-section">
         <canvas id="canvas"></canvas>
       </div>
 
+      <!-- Controls -->
       <div class="controls-section">
         <div>
           <h1>💬 Talk to Character</h1>
@@ -186,7 +234,7 @@
             <label for="system-prompt">System Prompt (Optional):</label>
             <textarea
               id="system-prompt"
-              rows="4"
+              rows="3"
               placeholder="Define character personality and behavior..."
             ></textarea>
           </div>
@@ -211,6 +259,9 @@
       import { loadFBXFromURL } from "./main.js";
 
       const canvas = document.getElementById("canvas");
+      const emotionVideo = document.getElementById("emotion-video");
+      const emotionCanvas = document.getElementById("emotion-canvas");
+      const emotionLabel = document.getElementById("emotion-label");
       const characterSelect = document.getElementById("character-select");
       const systemPromptEl = document.getElementById("system-prompt");
       const startBtn = document.getElementById("start-btn");
@@ -219,6 +270,31 @@
 
       let conversation = null;
       let sceneReady = false;
+      let emotionDetector = null;
+
+      // Initialize emotion detection
+      async function initializeEmotionDetection() {
+        try {
+          // Dynamically import emotion detector
+          const module = await import("./emotion-detector.js");
+          const EmotionDetector = module.default;
+
+          emotionDetector = new EmotionDetector();
+          await emotionDetector.initialize(emotionVideo, emotionCanvas);
+
+          // Update emotion display
+          emotionDetector.onEmotionUpdate((emotion, confidence) => {
+            emotionLabel.textContent = `😊 ${emotion} (${(
+              confidence * 100
+            ).toFixed(0)}%)`;
+          });
+
+          console.log("✅ Emotion detection initialized");
+        } catch (err) {
+          console.warn("⚠️ Emotion detection not available:", err.message);
+          emotionLabel.textContent = "📷 Camera not available";
+        }
+      }
 
       // Load characters
       async function loadCharacters() {
@@ -271,6 +347,11 @@
           try {
             conversation = new VoiceConversation();
             await conversation.initialize();
+
+            // Attach emotion detector to conversation
+            if (emotionDetector) {
+              conversation.setEmotionDetector(emotionDetector);
+            }
           } catch (err) {
             statusEl.textContent = `❌ Microphone error: ${err.message}`;
             conversation = null;
@@ -285,6 +366,7 @@
           const result = await conversation.conversationLoop({
             systemPrompt: systemPromptEl.value,
             character: "mark_v2_3",
+            emotion: emotionDetector?.getAverageEmotion(5),
             onStatusChange: (status) => {
               statusEl.textContent = status;
             },
@@ -312,6 +394,7 @@
       });
 
       // Initialize
+      initializeEmotionDetection();
       loadCharacters();
     </script>
   </body>

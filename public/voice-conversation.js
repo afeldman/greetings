@@ -9,6 +9,7 @@ export class VoiceConversation {
   private stream;
   private audioChunks = [];
   private isRecording = false;
+  private emotionDetector; // Emotion detection instance
 
   /**
    * Initialize microphone access
@@ -77,6 +78,13 @@ export class VoiceConversation {
   }
 
   /**
+   * Set emotion detector instance
+   */
+  setEmotionDetector(detector) {
+    this.emotionDetector = detector;
+  }
+
+  /**
    * Send audio to server for conversation
    */
   async sendConversation(
@@ -85,12 +93,22 @@ export class VoiceConversation {
       systemPrompt?: string;
       character?: string;
       onStatusChange?: (status: string) => void;
+      emotion?: string;
     }
   ) {
     const onStatus = options?.onStatusChange || console.log;
 
     try {
       onStatus("🎤 Sending audio to server...");
+
+      // Add detected emotion to system prompt if available
+      let systemPrompt = options?.systemPrompt || "";
+      if (this.emotionDetector) {
+        const emotion = options?.emotion || this.emotionDetector.getEmotion();
+        if (emotion) {
+          systemPrompt += `\n\nNOTE: The user appears to be feeling ${emotion}. Please respond with appropriate empathy and friendliness.`;
+        }
+      }
 
       const response = await fetch("/api/conversation", {
         method: "POST",
