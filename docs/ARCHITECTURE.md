@@ -7,32 +7,32 @@ Comprehensive guide to Magic Mirror's system architecture, data flows, and imple
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                      Browser (Client)                       │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  Three.js 3D Renderer                              │   │
-│  │  ┌──────────────────┐      ┌──────────────────┐   │   │
-│  │  │ FBX Avatar Model │◄─────┤ Blendshape Data  │   │   │
-│  │  │ Lynx, Frank,     │      │ (100+ shapes)    │   │   │
-│  │  │ Mirror           │      └──────────────────┘   │   │
-│  │  └──────────────────┘                             │   │
-│  │         │                                         │   │
-│  │         ├─ face-api.js (Emotion Detection)       │   │
-│  │         │  ├─ TinyFaceDetector                   │   │
-│  │         │  └─ FaceExpressionNet                  │   │
-│  │         │                                         │   │
-│  │         ├─ WebAudio API (Microphone Capture)    │   │
-│  │         │  └─ MediaRecorder                      │   │
-│  │         │                                         │   │
-│  │         └─ WebGL Canvas (Video Display)          │   │
-│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  Three.js 3D Renderer                               │    │
+│  │  ┌──────────────────┐      ┌──────────────────┐     │    │
+│  │  │ FBX Avatar Model │◄─────┤ Blendshape Data  │     │    │
+│  │  │ Lynx, Frank,     │      │ (100+ shapes)    │     │    │
+│  │  │ Mirror           │      └──────────────────┘     │    │
+│  │  └──────────────────┘                               │    │
+│  │         │                                           │    │
+│  │         ├─ face-api.js (Emotion Detection)          │    │
+│  │         │  ├─ TinyFaceDetector                      │    │
+│  │         │  └─ FaceExpressionNet                     │    │
+│  │         │                                           │    │
+│  │         ├─ WebAudio API (Microphone Capture)        │    │
+│  │         │  └─ MediaRecorder                         │    │
+│  │         │                                           │    │
+│  │         └─ WebGL Canvas (Video Display)             │    │
+│  └─────────────────────────────────────────────────────┘    │
 │                         │                                   │
 │                         ▼                                   │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  API Communication Layer                            │   │
-│  │  ├─ POST /api/conversation (Main endpoint)          │   │
-│  │  ├─ GET /api/characters (List avatars)              │   │
-│  │  ├─ GET /api/models (List A2F models)               │   │
-│  │  └─ POST /api/process-audio (Direct A2F)            │   │
-│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  API Communication Layer                            │    │
+│  │  ├─ POST /api/conversation (Main endpoint)          │    │
+│  │  ├─ GET /api/characters (List avatars)              │    │
+│  │  ├─ GET /api/models (List A2F models)               │    │
+│  │  └─ POST /api/process-audio (Direct A2F)            │    │
+│  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────┘
                          │
                          │ HTTPS/REST
@@ -40,49 +40,49 @@ Comprehensive guide to Magic Mirror's system architecture, data flows, and imple
 ┌─────────────────────────────────────────────────────────────┐
 │                   Deno Server (Backend)                     │
 │                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  Oak HTTP Framework                                │   │
-│  │  ├─ Route Handler: /talk, /face, /settings        │   │
-│  │  ├─ Middleware: Logger, CORS                       │   │
-│  │  └─ Static Files: public/, characters/             │   │
-│  └─────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  Oak HTTP Framework                                 │    │
+│  │  ├─ Route Handler: /talk, /face, /settings          │    │
+│  │  ├─ Middleware: Logger, CORS                        │    │
+│  │  └─ Static Files: public/, characters/              │    │
+│  └─────────────────────────────────────────────────────┘    │
 │                         │                                   │
-│  ┌──────────────────────┼──────────────────────────────┐   │
-│  │                      │                              │   │
-│  ▼                      ▼                              ▼   │
+│  ┌──────────────────────┼──────────────────────────────┐    │
+│  │                      │                              │    │
+│  ▼                      ▼                              ▼    │
 │ ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │   │
 │ │ OpenAI API   │  │ NVIDIA A2F   │  │ Config       │    │   │
 │ │              │  │ gRPC Service │  │ Loader       │    │   │
 │ │ ├─ Whisper   │  │              │  │              │    │   │
 │ │ │  (STT)     │  │ ┌──────────┐ │  │ ├─ .env      │    │   │
-│ │ ├─ ChatGPT   │  │ │gRPC Proto│ │  │ │ Loader    │    │   │
-│ │ │  (Chat)    │  │ │ Bindings │ │  │ ├─ YAML     │    │   │
-│ │ ├─ TTS       │  │ └──────────┘ │  │ │ Parser    │    │   │
-│ │ │  (Voice)   │  │              │  │ └─ Env      │    │   │
-│ │ └──EncProv───┘  └──────────────┘  │   Vars     │    │   │
+│ │ ├─ ChatGPT   │  │ │gRPC Proto│ │  │ │ Loader     │    │   │
+│ │ │  (Chat)    │  │ │ Bindings │ │  │ ├─ YAML      │    │   │
+│ │ ├─ TTS       │  │ └──────────┘ │  │ │ Parser     │    │   │
+│ │ │  (Voice)   │  │              │  │ └─ Env       │    │   │
+│ │ └──EncProv───┘  └──────────────┘  │   Vars       │    │   │
 │ │  (Mammouth.ai   ┌─────────────┐   └──────────────┘    │   │
-│ │   optional)     │ Audio       │                        │   │
+│ │   optional)     │ Audio       │                       │   │
 │ │                 │ Processor   │   ┌──────────────┐    │   │
 │ │                 │             │   │ Blendshape   │    │   │
 │ │                 │ ├─ PCM16    │   │ Utils        │    │   │
 │ │                 │ ├─ Normalize│   │              │    │   │
-│ │                 │ ├─ Resample │   │ ├─ Apply    │    │   │
-│ │                 │ └─ Encode   │   │ │ Config    │    │   │
-│ │                 └─────────────┘   │ ├─ Smooth   │    │   │
-│ │                                   │ └─ Normalize│    │   │
+│ │                 │ ├─ Resample │   │ ├─ Apply     │    │   │
+│ │                 │ └─ Encode   │   │ │ Config     │    │   │
+│ │                 └─────────────┘   │ ├─ Smooth    │    │   │
+│ │                                   │ └─ Normalize │    │   │
 │ │                 ┌─────────────┐   └──────────────┘    │   │
-│ │                 │ Conversation│                        │   │
-│ │                 │ Pipeline    │                        │   │
-│ │                 │             │                        │   │
-│ │                 │ ├─ STT      │                        │   │
-│ │                 │ ├─ Chat     │                        │   │
-│ │                 │ ├─ TTS      │                        │   │
-│ │                 │ ├─ A2F      │                        │   │
-│ │                 │ └─ Respond  │                        │   │
-│ │                 └─────────────┘                        │   │
-│ └──────────────────────────────────────────────────────┘   │
+│ │                 │ Conversation│                       │   │
+│ │                 │ Pipeline    │                       │   │
+│ │                 │             │                       │   │
+│ │                 │ ├─ STT      │                       │   │
+│ │                 │ ├─ Chat     │                       │   │
+│ │                 │ ├─ TTS      │                       │   │
+│ │                 │ ├─ A2F      │                       │   │
+│ │                 │ └─ Respond  │                       │   │
+│ │                 └─────────────┘                       │   │
+│ └──────────────────────────────────────────────────-────┘   │
 │                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
+│  ┌──────────────────────────────────────────────────-───┐   │
 │  │  Data Models                                        │   │
 │  │  ├─ OpenAIConfig (provider, model, voice, key)      │   │
 │  │  ├─ AudioStats (duration, samples, bytes)          │   │
@@ -101,7 +101,7 @@ Comprehensive guide to Magic Mirror's system architecture, data flows, and imple
 CLIENT                              SERVER                    EXTERNAL APIs
   │                                   │                            │
   ├─ 1. User speaks                   │                            │
-  │  (Microphone Input)                │                            │
+  │  (Microphone Input)               │                            │
   │                                   │                            │
   ├─ 2. Stop recording                │                            │
   │  (PCM16 @ 16kHz)                  │                            │
@@ -197,7 +197,7 @@ async function conversationPipeline(
     audio: audioBase64,
     blendshapes,
     tokens: { prompt, completion, total },
-    audioStats: { duration, sampleCount, byteSize }
+    audioStats: { duration, sampleCount, byteSize },
   };
 }
 ```
@@ -205,21 +205,23 @@ async function conversationPipeline(
 ## 🎬 3D Avatar Rendering
 
 ### FBX Model Loading
+
 ```typescript
 // Browser-side (Three.js)
 const fbxLoader = new FBXLoader();
-fbxLoader.load('/characters/lynq/lynx_bobcat_01.fbx', (fbx) => {
+fbxLoader.load("/characters/lynq/lynx_bobcat_01.fbx", (fbx) => {
   // fbx = THREE.Group with:
   //  ├─ mesh (geometry + materials)
   //  ├─ skeleton (bone structure)
   //  ├─ animations (idle, etc)
   //  └─ blendshapes (100+ facial shapes)
-  
+
   scene.add(fbx);
 });
 ```
 
 ### Blendshape Application
+
 ```typescript
 // Update blendshape weights per frame
 function updateBlendshapes(blendshapeData) {
@@ -229,7 +231,7 @@ function updateBlendshapes(blendshapeData) {
 }
 
 // Sync with audio playback
-audioElement.addEventListener('timeupdate', () => {
+audioElement.addEventListener("timeupdate", () => {
   const frameIndex = Math.floor(currentTime / frameDelta);
   updateBlendshapes(blendshapes[frameIndex]);
 });
@@ -238,6 +240,7 @@ audioElement.addEventListener('timeupdate', () => {
 ## 🔊 Audio Processing Pipeline
 
 ### Input: WebAudio API Microphone
+
 ```
 Raw Microphone Input (AudioBuffer)
   ↓ (Sample rate may vary: 44.1kHz, 48kHz, 96kHz)
@@ -249,23 +252,24 @@ Send to server
 ```
 
 ### Processing: Audio Normalization
+
 ```typescript
 function normalizeAudio(audioBuffer: AudioBuffer): Float32Array {
   // 1. Get single channel (mono)
   const rawData = audioBuffer.getChannelData(0);
-  
+
   // 2. Find max amplitude
   const max = Math.max(...Array.from(rawData));
-  
+
   // 3. Normalize to -1.0 to 1.0 range
-  const normalized = rawData.map(sample => sample / max);
-  
+  const normalized = rawData.map((sample) => sample / max);
+
   // 4. Convert to Int16 for PCM16
   const int16 = new Int16Array(normalized.length);
   for (let i = 0; i < normalized.length; i++) {
     int16[i] = normalized[i] * 32767; // Max 16-bit signed
   }
-  
+
   return int16;
 }
 ```
@@ -299,6 +303,7 @@ Sync playback with audio timeline
 ## 📁 Module Organization
 
 ### `src/openai.ts` - AI Provider Abstraction
+
 ```
 OpenAIConfig interface
   ├─ apiKey: string
@@ -317,6 +322,7 @@ Functions:
 ```
 
 ### `src/nvidia/` - Audio2Face Module
+
 ```
 ├─ index.ts (Public exports)
 ├─ constants.ts (PCM16_SAMPLE_RATE, CHUNK_DURATION)
@@ -333,6 +339,7 @@ Types:
 ```
 
 ### `public/emotion-detector.js` - Webcam ML
+
 ```
 EmotionDetector class
   ├─ initialize() → Request camera + load models
@@ -349,6 +356,7 @@ Models:
 ```
 
 ### `public/voice-conversation.js` - Microphone & API
+
 ```
 VoiceConversation class
   ├─ initialize() → Request microphone
@@ -368,6 +376,7 @@ Data:
 ## 🔐 Environment Configuration
 
 ### .env Resolution Order
+
 ```
 1. Check .env file in project root
 2. Parse with loadEnv() from src/config.ts
@@ -377,6 +386,7 @@ Data:
 ```
 
 ### Configuration Flow
+
 ```
 .env file
   ↓
@@ -395,6 +405,7 @@ Used in API calls
 ## 🎯 Performance Considerations
 
 ### Latency Breakdown (Typical)
+
 ```
 User speaks          → Audio capture:        1-5 seconds
 Stop → Send          → Network:              0.1-0.5 seconds
@@ -410,6 +421,7 @@ Total                                        ~5-15 seconds
 ```
 
 ### Memory Usage
+
 ```
 Browser (Client-side):
   ├─ Three.js scene:         ~30-50 MB (FBX + textures)
@@ -427,6 +439,7 @@ Server (Deno runtime):
 ```
 
 ### Network Bandwidth
+
 ```
 Per conversation:
   ├─ Upload (WAV audio):      ~200-500 KB
@@ -441,30 +454,32 @@ Per conversation:
 ### POST `/api/conversation`
 
 **Request Schema:**
+
 ```typescript
 interface ConversationRequest {
-  audio: string;              // base64 encoded WAV
-  systemPrompt?: string;      // Character personality prompt
-  character?: string;         // Avatar model (mark_v2_3, etc)
-  emotion?: string;           // Detected emotion context
+  audio: string; // base64 encoded WAV
+  systemPrompt?: string; // Character personality prompt
+  character?: string; // Avatar model (mark_v2_3, etc)
+  emotion?: string; // Detected emotion context
 }
 ```
 
 **Response Schema:**
+
 ```typescript
 interface ConversationResponse {
-  userMessage: string;        // Transcribed user input
-  assistantMessage: string;   // AI generated response
-  audio: string;              // base64 encoded MP3
+  userMessage: string; // Transcribed user input
+  assistantMessage: string; // AI generated response
+  audio: string; // base64 encoded MP3
   audioStats: {
-    duration: number;         // seconds
-    sampleCount: number;      // PCM samples
-    byteSize: number;         // bytes
+    duration: number; // seconds
+    sampleCount: number; // PCM samples
+    byteSize: number; // bytes
   };
   tokens: {
-    prompt: number;           // Input tokens
-    completion: number;       // Output tokens
-    total: number;            // Sum
+    prompt: number; // Input tokens
+    completion: number; // Output tokens
+    total: number; // Sum
   };
 }
 ```
@@ -472,6 +487,7 @@ interface ConversationResponse {
 ## 🧪 Testing Strategy
 
 ### Unit Tests
+
 ```typescript
 // Test audio normalization
 const input = new Float32Array([0.5, 1.0, 0.8]);
@@ -484,19 +500,17 @@ assert(emotions.happy + emotions.sad + ... === 1.0);
 ```
 
 ### Integration Tests
+
 ```typescript
 // Test full conversation
-const response = await conversationPipeline(
-  audioBase64,
-  "Be helpful",
-  "happy"
-);
+const response = await conversationPipeline(audioBase64, "Be helpful", "happy");
 assert(response.userMessage.length > 0);
 assert(response.assistantMessage.length > 0);
 assert(response.audio.length > 0);
 ```
 
 ### Performance Tests
+
 ```typescript
 // Benchmark API call times
 const start = performance.now();

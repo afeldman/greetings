@@ -7,6 +7,7 @@ Quick fix guide for common issues in Magic Mirror.
 ### ❌ "Address already in use" / Port Conflict
 
 **Error:**
+
 ```
 error: listen tcp :1234: bind: Address already in use
 ```
@@ -14,6 +15,7 @@ error: listen tcp :1234: bind: Address already in use
 **Solution:**
 
 **macOS/Linux:**
+
 ```bash
 # Find process using port
 lsof -ti:1234
@@ -26,6 +28,7 @@ deno task dev
 ```
 
 **Windows:**
+
 ```bash
 # Find process using port
 netstat -ano | findstr :1234
@@ -40,6 +43,7 @@ deno task dev
 ### ❌ "OpenAI API key not configured"
 
 **Error:**
+
 ```
 [VoiceConversation] Error: OpenAI API key not configured
 ```
@@ -47,16 +51,19 @@ deno task dev
 **Solution:**
 
 1. **Check .env file exists:**
+
    ```bash
    cat .env | grep OPENAI_API_KEY
    ```
 
 2. **Add key if missing:**
+
    ```bash
    echo "OPENAI_API_KEY=sk-..." >> .env
    ```
 
 3. **Verify key format:**
+
    - Must start with `sk-`
    - Should be 40+ characters
    - Get from: https://platform.openai.com/api-keys
@@ -69,6 +76,7 @@ deno task dev
 ### ❌ "Cannot find module" Error
 
 **Error:**
+
 ```
 error: Unable to load the remote module: https://deno.land/...
 ```
@@ -76,11 +84,13 @@ error: Unable to load the remote module: https://deno.land/...
 **Solution:**
 
 1. **Check internet connection**
+
    ```bash
    curl https://deno.land
    ```
 
 2. **Clear cache:**
+
    ```bash
    deno cache --reload src/server.ts
    ```
@@ -94,6 +104,7 @@ error: Unable to load the remote module: https://deno.land/...
 ### ❌ Server Starts but Page Doesn't Load
 
 **Error:**
+
 ```
 localhost:1234 refused to connect
 ```
@@ -101,17 +112,20 @@ localhost:1234 refused to connect
 **Check:**
 
 1. **Server actually running?**
+
    ```bash
    # Terminal should show:
    # 🚀 Oak server running at http://localhost:1234
    ```
 
 2. **Try different port:**
+
    ```bash
    PORT=3000 deno task dev
    ```
 
 3. **Check firewall:**
+
    - macOS: System Preferences → Security & Privacy → Firewall
    - Windows: Windows Defender Firewall → Allow through firewall
 
@@ -123,6 +137,7 @@ localhost:1234 refused to connect
 ### ❌ "No such file or directory" for Characters
 
 **Error:**
+
 ```
 error: Failed to find character files
 ```
@@ -130,11 +145,13 @@ error: Failed to find character files
 **Solution:**
 
 1. **Check characters folder exists:**
+
    ```bash
    ls -la characters/
    ```
 
    Should show:
+
    ```
    frank/
    mirror/
@@ -142,6 +159,7 @@ error: Failed to find character files
    ```
 
 2. **Check FBX files inside:**
+
    ```bash
    ls -la characters/lynq/
    # Should show: lynx_bobcat_01.fbx
@@ -155,6 +173,7 @@ error: Failed to find character files
 ### ❌ "NVIDIA A2F endpoint unreachable"
 
 **Error:**
+
 ```
 Failed to connect to Audio2Face service
 ```
@@ -162,17 +181,20 @@ Failed to connect to Audio2Face service
 **Solution:**
 
 1. **Check endpoint is set:**
+
    ```bash
    echo $NVIDIA_A2F_ENDPOINT
    # Should show: grpc.nvcf.nvidia.com:443
    ```
 
 2. **Test connectivity:**
+
    ```bash
    curl -I https://grpc.nvcf.nvidia.com:443
    ```
 
 3. **Check firewall allows outbound gRPC**
+
    - gRPC typically uses port 443 (HTTPS)
    - Some corporate firewalls block it
 
@@ -187,6 +209,7 @@ Failed to connect to Audio2Face service
 ### ❌ "Microphone access denied"
 
 **Error:**
+
 ```
 User denied microphone access
 ```
@@ -194,16 +217,19 @@ User denied microphone access
 **Solution:**
 
 1. **Check browser permissions:**
+
    - **Chrome**: Top-left lock icon → Site settings → Microphone → Allow
    - **Firefox**: about:preferences → Privacy → Permissions → Microphone
    - **Safari**: System Preferences → Security & Privacy → Microphone
 
 2. **Reload page:**
+
    ```
    Cmd+R (macOS) or Ctrl+R (Windows)
    ```
 
 3. **Clear site data:**
+
    - Chrome: Settings → Privacy → Clear browsing data → Cookies and other site data
    - Reload page
 
@@ -214,6 +240,7 @@ User denied microphone access
 ### ❌ "No audio response"
 
 **Error:**
+
 ```
 Audio buffer is empty or undefined
 ```
@@ -221,11 +248,13 @@ Audio buffer is empty or undefined
 **Causes & Solutions:**
 
 1. **Whisper failed to transcribe:**
+
    - Check audio quality (quiet, echo, background noise?)
    - Try speaking louder and clearer
    - Test microphone with other app (Zoom, Teams, etc)
 
 2. **ChatGPT didn't respond:**
+
    - Check if API key is valid:
      ```bash
      curl https://api.openai.com/v1/models \
@@ -235,6 +264,7 @@ Audio buffer is empty or undefined
    - Try again in 30 seconds
 
 3. **TTS failed:**
+
    - Verify API key again
    - Check response object in browser console (F12)
 
@@ -248,11 +278,13 @@ Audio buffer is empty or undefined
 **Solution:**
 
 1. **Adjust microphone input level:**
+
    - macOS: System Settings → Sound → Input → Input Volume slider
    - Windows: Settings → Sound → Input volume
    - Browser: May have own mic control
 
 2. **Reduce system noise:**
+
    - Close background apps
    - Mute other audio sources
    - Use headset instead of laptop mic
@@ -267,11 +299,13 @@ Audio buffer is empty or undefined
 **Solution:**
 
 1. **Emotion detection might be wrong:**
+
    - Check detected emotion in left panel
    - Try more exaggerated expression
    - Improve lighting
 
 2. **System prompt override:**
+
    - Edit system prompt in UI to explicitly set tone:
      ```
      "Respond as if the user is happy. Be enthusiastic!"
@@ -289,6 +323,7 @@ Audio buffer is empty or undefined
 ### ❌ "Camera not available"
 
 **Error:**
+
 ```
 Camera access denied or unavailable
 ```
@@ -296,19 +331,22 @@ Camera access denied or unavailable
 **Solution:**
 
 1. **Grant camera permission:**
+
    - Browser prompt appears → Click Allow
    - If missed, go to Site Settings → Camera → Allow
 
 2. **Check only one app using camera:**
+
    - Close Zoom, Teams, FaceTime, OBS, etc.
    - Reload browser page
    - Try again
 
 3. **Verify camera works:**
+
    ```bash
    # macOS - open Photo Booth or Facetime
    open -a "Photo Booth"
-   
+
    # Windows - open Camera app
    ```
 
@@ -325,10 +363,12 @@ Camera access denied or unavailable
 1. **Wait longer** - models loading from CDN (first time: 2-5 seconds)
 
 2. **Check browser console:** F12 → Console tab
+
    - Look for face-api.js errors
    - Check network tab → Models download status
 
 3. **Disable and enable camera:**
+
    ```bash
    # Refresh page
    Cmd+R or Ctrl+R
@@ -352,12 +392,14 @@ Camera access denied or unavailable
 **Solutions:**
 
 1. **Improve conditions:**
+
    - Position face straight-on, 30-60cm from camera
    - Bright, even lighting (window + lamp)
    - Remove glasses if possible
    - Make clear, exaggerated expression
 
 2. **Give it more time:**
+
    - System averages 5 seconds of detections
    - Hold expression steadily
    - Wait for it to stabilize
@@ -371,16 +413,19 @@ Camera access denied or unavailable
 **Solution:**
 
 1. **Reduce detection frequency:**
+
    - Edit `public/emotion-detector.js`
    - Change: `}, 1000);` to `}, 2000);` (check every 2 seconds instead)
 
 2. **Lower camera resolution:**
+
    ```javascript
    // In emotion-detector.js initialize()
    video: { width: 160, height: 120 }  // Instead of 320x240
    ```
 
 3. **Close other browser tabs**
+
    - ML inference shares CPU with browser
 
 4. **Use hardware acceleration:**
@@ -393,6 +438,7 @@ Camera access denied or unavailable
 ### ❌ "Network request failed" / CORS error
 
 **Error:**
+
 ```
 Access to XMLHttpRequest blocked by CORS policy
 ```
@@ -400,9 +446,11 @@ Access to XMLHttpRequest blocked by CORS policy
 **Solution:**
 
 1. **Server CORS is enabled** - Should work by default
+
    - Check `src/server.ts` has CORS middleware
 
 2. **Try different URL format:**
+
    ```
    http://localhost:1234  → works
    http://127.0.0.1:1234  → try this
@@ -418,17 +466,20 @@ Access to XMLHttpRequest blocked by CORS policy
 **Causes & Solutions:**
 
 1. **OpenAI rate limiting:**
+
    - Check: https://platform.openai.com/account/rate-limits
    - Wait 60 seconds before retrying
    - Upgrade plan if consistently hitting limits
 
 2. **Network latency:**
+
    ```bash
    # Test latency to OpenAI
    ping api.openai.com
    ```
 
 3. **Server CPU overloaded:**
+
    - Check: `top` command
    - Close other Deno processes
    - Reduce number of concurrent conversations
@@ -442,6 +493,7 @@ Access to XMLHttpRequest blocked by CORS policy
 ### ❌ "Connection refused"
 
 **Error:**
+
 ```
 Connection refused - Cannot reach server
 ```
@@ -449,12 +501,14 @@ Connection refused - Cannot reach server
 **Solution:**
 
 1. **Server is running?**
+
    ```bash
    deno task dev
    # Should show: 🚀 Oak server running...
    ```
 
 2. **Correct port?**
+
    ```bash
    # Check .env
    cat .env | grep PORT
@@ -473,6 +527,7 @@ Connection refused - Cannot reach server
 ### ❌ "Avatar doesn't load"
 
 **Error:**
+
 ```
 Failed to load character model
 ```
@@ -480,16 +535,19 @@ Failed to load character model
 **Solution:**
 
 1. **FBX file exists?**
+
    ```bash
    ls characters/lynq/
    # Must contain: lynx_bobcat_01.fbx
    ```
 
 2. **Character selected in UI?**
+
    - Dropdown should show character names
    - Click one to load
 
 3. **Check browser console:**
+
    - F12 → Console tab
    - Look for 3D loader errors
    - Check Network tab for 404s
@@ -503,10 +561,12 @@ Failed to load character model
 **Causes:**
 
 1. **Audio2Face disabled:**
+
    - If NVIDIA_A2F_ENDPOINT missing, A2F disabled
    - Add to .env: `NVIDIA_A2F_ENDPOINT=grpc.nvcf.nvidia.com:443`
 
 2. **Blendshape data not received:**
+
    - Check server logs for A2F errors
    - Verify Audio2Face is responding
 
@@ -517,6 +577,7 @@ Failed to load character model
 ### ❌ "Page is blank / 404 error"
 
 **Error:**
+
 ```
 Cannot GET /talk
 ```
@@ -524,11 +585,13 @@ Cannot GET /talk
 **Solution:**
 
 1. **Check route exists in server:**
+
    ```bash
    grep -n "get.*talk" src/server.ts
    ```
 
 2. **Correct URL?**
+
    ```
    http://localhost:1234/talk     → ✅ Correct
    http://localhost:1234/talk.html → ❌ Wrong
@@ -546,10 +609,12 @@ Cannot GET /talk
 **Solution:**
 
 1. **Clear browser cache:**
+
    - F12 → Application → Clear Storage
    - Or Ctrl+Shift+R (hard refresh)
 
 2. **Check styles.css loaded:**
+
    - F12 → Network tab
    - Look for `styles.css` - should be 200 OK
    - Not 404
@@ -565,6 +630,7 @@ Cannot GET /talk
 ### Enable Verbose Logging
 
 **Server-side:**
+
 ```typescript
 // In src/server.ts, add:
 console.log("[DEBUG] Request received:", req.method, req.url);
@@ -573,10 +639,11 @@ console.log("[DEBUG] Request received:", req.method, req.url);
 Then check console output when running `deno task dev`
 
 **Client-side:**
+
 ```javascript
 // In browser console (F12):
-localStorage.debug = '*';  // Enable all debug logs
-localStorage.debug = 'VoiceConversation';  // Specific module
+localStorage.debug = "*"; // Enable all debug logs
+localStorage.debug = "VoiceConversation"; // Specific module
 ```
 
 ### Check Server Health
@@ -596,13 +663,15 @@ curl http://localhost:1234/api/config  # (if exposed in debug mode)
 
 ```javascript
 // Check microphone access
-navigator.mediaDevices.enumerateDevices()
-  .then(devices => console.log(devices))
+navigator.mediaDevices
+  .enumerateDevices()
+  .then((devices) => console.log(devices));
 
 // Check camera access
-navigator.mediaDevices.getUserMedia({ video: true })
-  .then(stream => console.log("Camera OK", stream))
-  .catch(err => console.error("Camera FAILED", err))
+navigator.mediaDevices
+  .getUserMedia({ video: true })
+  .then((stream) => console.log("Camera OK", stream))
+  .catch((err) => console.error("Camera FAILED", err));
 
 // Check emotion detector status
 console.log(emotionDetector);
@@ -616,11 +685,13 @@ console.log(emotionDetector.currentEmotion);
 If issue persists:
 
 1. **Check these files:**
+
    - Server logs: Terminal running `deno task dev`
    - Browser console: F12 key
    - Network tab: F12 → Network
 
 2. **Collect diagnostics:**
+
    ```bash
    # Save server info
    deno --version > diagnostics.txt
@@ -628,20 +699,22 @@ If issue persists:
    ```
 
 3. **Try minimal reproduction:**
+
    - Can you reproduce with default settings?
    - Does it work with simple text (no emotion, no avatar)?
 
 4. **Restart everything:**
+
    ```bash
    # Kill server
    lsof -ti:1234 | xargs kill -9
-   
+
    # Clear browser cache
    # Open DevTools → Application → Clear Storage
-   
+
    # Restart
    deno task dev
-   
+
    # Open fresh incognito window
    # Visit http://localhost:1234/talk
    ```

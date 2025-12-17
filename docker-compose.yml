@@ -1,0 +1,63 @@
+version: "3.8"
+
+services:
+  magic-mirror:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: magic-mirror-prod
+    ports:
+      - "${PORT:-1234}:1234"
+    environment:
+      # AI Provider Configuration
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      OPENAI_VOICE: ${OPENAI_VOICE:-alloy}
+
+      # Optional: Cheaper AI Provider
+      MAMMOUTH_API_KEY: ${MAMMOUTH_API_KEY:-}
+
+      # Audio2Face (Avatar Animation)
+      NVIDIA_A2F_ENDPOINT: ${NVIDIA_A2F_ENDPOINT:-grpc.nvcf.nvidia.com:443}
+      NVIDIA_A2F_FUNCTION_ID: ${NVIDIA_A2F_FUNCTION_ID:-8efc55f5-6f00-424e-afe9-26212cd2c630}
+
+      # Server
+      PORT: ${PORT:-1234}
+
+    # Security
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/.deno
+
+    # Restart policy
+    restart: unless-stopped
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1234/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+        reservations:
+          cpus: "1"
+          memory: 1G
