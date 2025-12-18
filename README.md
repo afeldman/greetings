@@ -312,8 +312,6 @@ MAMMOUTH_API_KEY=...
 
 NVIDIA_A2F_ENDPOINT=grpc.nvcf.nvidia.com:443
 
-````
-
 ### Switch to Mammouth.ai (Optional)
 
 For 70-80% cheaper chat completions:
@@ -323,7 +321,7 @@ For 70-80% cheaper chat completions:
 MAMMOUTH_API_KEY=your-key-here
 
 # Note: Whisper STT and TTS remain on OpenAI (not available on Mammouth)
-````
+```
 
 ---
 
@@ -419,11 +417,12 @@ model: "gpt-4"; // Options: gpt-4, gpt-4o, gpt-3.5-turbo, etc.
 
 Edit `public/emotion-detector.js`:
 
-````javascript
+```javascript
 const greetings = {
   happy: "Du siehst glücklich aus! Schön, dass es dir gut geht!",
   // Add more...
 };
+```
 
 ---
 
@@ -446,7 +445,7 @@ const greetings = {
 
 ```bash
 deno publish
-````
+```
 
 ### Deploy to Docker
 
@@ -497,7 +496,7 @@ Process audio with Audio2Face
 
 ## 📝 For More Details
 
-See [DENO_README.md](DENO_README.md) for complete documentation.
+See [docs/DENO_README.md](./docs/DENO_README.md) for complete documentation.
 
 ## Integrating OpenAI Realtime audio with NVIDIA Audio2Face
 
