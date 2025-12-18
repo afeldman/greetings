@@ -1,6 +1,10 @@
-# 🪞 Magic Mirror - Interactive Avatar System
+# 🪞 Lynq Mirror – Interactive AI Avatar System
 
 A modern, cloud-native avatar animation platform built with **Deno + TypeScript**. Create interactive 3D characters that talk, listen, and respond with emotion-aware AI.
+
+> Credits/Herkunft: Dieses Projekt basiert in Teilen auf dem "Magic Mirror AI"-Projekt von Concept‑Bytes.
+> – Patreon: https://www.patreon.com/posts/magic-mirror-ai-142910730
+> – GitHub: https://github.com/Concept-Bytes
 
 **Tech Stack**: Deno 🦕 | Oak Framework | TypeScript | Three.js | NVIDIA Audio2Face | face-api.js | OpenAI/Mammouth.ai
 
@@ -49,7 +53,7 @@ A modern, cloud-native avatar animation platform built with **Deno + TypeScript*
 
 ```bash
 # Clone/extract project
-cd Magic_Mirror
+cd Lynq_Mirror
 
 # Copy environment template
 cp .env.example .env
@@ -88,7 +92,7 @@ Output:
 ## 📁 Project Structure
 
 ```
-Magic_Mirror/
+Lynq_Mirror/
 ├── 📁 src/                          # TypeScript backend (Deno)
 │   ├── server.ts                    # Oak HTTP server + routes
 │   ├── openai.ts                    # AI provider abstraction
@@ -268,6 +272,34 @@ For 70-80% cheaper chat completions:
 MAMMOUTH_API_KEY=your-key-here
 
 # Note: Whisper STT and TTS remain on OpenAI (not available on Mammouth)
+```
+
+---
+
+## 🧠 Edge Hardware (Empfehlung)
+
+Für den Edge-Betrieb (lokaler Webserver, Audio/Video-I/O) genügt leichte ARM-Hardware, da KI-Services (OpenAI TTS/STT, NVIDIA Audio2Face) in der Cloud laufen.
+
+- Minimal (Cloud‑KI): Raspberry Pi 5 (4–8 GB RAM), microSD U3/A2 oder besser SSD; Raspberry Pi OS 64‑bit (Bookworm) oder Ubuntu Server 24.04; USB‑Mikrofon, UVC‑Webcam (1080p).
+- NVIDIA (GPU/Headroom): Jetson Orin Nano 8/16 GB oder Jetson Xavier NX; Ubuntu 22.04 L4T r36.x; USB‑Mikrofon & UVC‑Webcam.
+- Jetson Nano (Legacy): grundsätzlich nutzbar für Server + I/O, aber limitiert; für neue Setups Orin Nano bevorzugen.
+- Netzwerk: stabile Internetverbindung für OpenAI- und NVIDIA‑A2F‑Requests.
+- Performance‑Hinweis: Emotionserkennung läuft im Browser (WebGL). Der Edge‑Host übernimmt primär Deno‑Server und Streaming; keine RTX‑GPU am Edge erforderlich, wenn A2F über grpc.nvcf.nvidia.com genutzt wird.
+
+Optional: Deno auf ARM64 installieren
+
+```bash
+curl -fsSL https://deno.land/install.sh | sh
+# Deno in PATH aufnehmen (z. B. ~/.zshrc)
+export DENO_INSTALL="$HOME/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
+deno --version
+```
+
+Jetson Tuning (optional)
+
+```bash
+sudo nvpmodel -m 0 && sudo jetson_clocks
 ```
 
 ---
