@@ -1,3 +1,7 @@
+<p align="center">
+       <img src="./public/logo.svg" alt="Lynq Mirror Logo" width="520" />
+</p>
+
 # 🪞 Lynq Mirror – Interactive AI Avatar System
 
 A modern, cloud-native avatar animation platform built with **Deno + TypeScript**. Create interactive 3D characters that talk, listen, and respond with emotion-aware AI.
